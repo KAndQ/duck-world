@@ -1,4 +1,6 @@
+
 #include "HelloWorldScene.h"
+#include "AssetsManager.h"
 #include "isoWorld/Terrain/IWXZTerrain.h"
 #include "isoWorld/Terrain/IWXYGradient.h"
 #include "isoWorld/Terrain/IWXYZCoordinate.h"
@@ -6,6 +8,7 @@
 #include "isoWorld/Common/IWMath.h"
 
 USING_NS_CC;
+USING_NS_CC_EXT;
 
 CCScene* HelloWorld::scene()
 {
@@ -56,7 +59,7 @@ bool HelloWorld::init()
 //	terrain->cellAt(2, 2)->setObstacleType(IWXZCell::kObstacleType_NoEntry);
 //	terrain->cellAt(3, 2)->setObstacleType(IWXZCell::kObstacleType_NoEntry);
 //	terrain->cellAt(4, 2)->setObstacleType(IWXZCell::kObstacleType_NoEntry);
-//	
+	
 	// gradient
 	IWXYGradient * gradient = world->createGradient();
 	IWXYPath * path1 = gradient->addPath(0, 0, 0, 64, 32, 0.0f);
@@ -117,6 +120,16 @@ bool HelloWorld::init()
 	m_roleEntity->getOffset().right = 2;
 //	m_roleEntity->getXYOffset().down = 2;
 //	m_roleEntity->getXYOffset().up = 2;
+	
+	AssetsManager * assetsManager = new AssetsManager("http://qd.baidupcs.com/file/8a4bd557c83b73c3144103c616792420?xcode=faa4142ec0477e1dd803d526e830bef2d97a28b6e118e835&fid=2251583324-250528-1673741789&time=1392359513&sign=FDTAXER-DCb740ccc5511e5e8fedcff06b081203-g7%2FXrd0vV4i13MgDhVyXpPTTSfU%3D&to=qb&fm=Q,B,T,t&expires=8h&rt=pr&r=819244787&logid=2953584711&vuk=2251583324&fn=TestZip.zip",
+													  "http://www.uhoogame.com/testversions.txt",
+													  CCFileUtils::sharedFileUtils()->getWritablePath().c_str());
+	assetsManager->setDelegate(this);
+	if (assetsManager->checkUpdate())
+	{
+		CCLOG("---- 有新的资源需要更新 ----");
+		assetsManager->update();
+	}
 	
 	drawCells();
 	
@@ -218,6 +231,36 @@ void HelloWorld::XYContactCallBack(IWEntity * entity, const IWPoint & newPos1, c
 //	CCLOG("---- XY: 发生碰撞 %u ----", ++s_count);
 }
 
+void HelloWorld::onError(AssetsManager::ErrorCode errorCode)
+{
+	switch (errorCode)
+	{
+		case AssetsManager::kCreateFile:
+			CCLOG("---- Error caused by creating a file to store downloaded data ----");
+			break;
+			
+		case AssetsManager::kNetwork:
+			CCLOG("---- Error caused by network ----");
+			break;
+			
+		case AssetsManager::kNoNewVersion:
+			CCLOG("---- There is not a new version ----");
+			break;
+			
+		case AssetsManager::kUncompress:
+			CCLOG("---- Error caused in uncompressing stage ----");
+			break;
+	}
+}
+
+void HelloWorld::onProgress(int percent)
+{
+	CCLOG("---- 当前下载量: %d ----", percent);
+}
+
+void HelloWorld::onSuccess()
+{
+}
 
 
 

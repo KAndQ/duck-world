@@ -2,10 +2,12 @@
 #define __HELLOWORLD_SCENE_H__
 
 #include "cocos2d.h"
+#include "AssetsManager.h"
 #include "isoWorld/Common/IWWorld.h"
 #include "isoWorld/Common/CoordConverter/IWBevelPlaneConverter.h"
 
-class HelloWorld : public cocos2d::CCLayer, public cocos2d::CCStandardTouchDelegate, public IWXZContactTerrainCallBack, public IWXYContactGradientCallBack
+class HelloWorld : public cocos2d::CCLayer, public cocos2d::CCStandardTouchDelegate,
+public IWXZContactTerrainCallBack, public IWXYContactGradientCallBack, public cocos2d::extension::AssetsManagerDelegateProtocol
 {
 public:
     // Here's a difference. Method 'init' in cocos2d-x returns bool, instead of returning 'id' in cocos2d-iphone
@@ -27,6 +29,10 @@ public:
 	
 	virtual void XZContactCallBack(IWEntity * entity, const IWPoint & newPos1, const IWPoint & newPos2, const IWPoint & lastPos);
 	virtual void XYContactCallBack(IWEntity * entity, const IWPoint & newPos1, const IWPoint & newPos2, const IWPoint & lastPos);
+	
+	virtual void onError(cocos2d::extension::AssetsManager::ErrorCode errorCode);
+	virtual void onProgress(int percent);
+	virtual void onSuccess();
 	
 private:
 	
